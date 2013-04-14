@@ -4,3 +4,9 @@
 *.jar
 *.war
 *.ear
+HoerBar/.classpath
+HoerBar/.project
+HoerBar/.settings/org.eclipse.jdt.core.prefs
+TouchScreenDriver/.classpath
+TouchScreenDriver/.project
+TouchScreenDriver/.settings/org.eclipse.jdt.core.prefs
