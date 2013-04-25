@@ -3,48 +3,52 @@
  */
 package bowa.gui.components;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.nio.file.Paths;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JButton;
-import javax.swing.ImageIcon;
-import javax.swing.Timer;
-
-import java.awt.Color;
-import java.awt.Font;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
-import javax.swing.JLabel;
-import java.awt.BorderLayout;
-import javax.swing.BoxLayout;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import bowa.audio.AudioPlayer;
+import org.bff.javampd.objects.MPDSong;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import bowa.audio.AudioPlayer;
 
 
 /**
  * @author Phillip
  *
  */
+@SuppressWarnings("serial")
 public class AudioPlayerPanel extends JPanel implements ActionListener{
 	
 	protected JLabel _title = new JLabel(" ");
 	protected JProgressBar _progress = new JProgressBar();
-	protected JLabel _time = new JLabel("0:00 von 0:00");
+	protected JLabel _time = new JLabel("00:00:00 von 00:00:00");
 	protected JSlider _volume = new JSlider();
 	protected JButton _play = new JButton();
 	protected Timer _timer = new Timer(1000, this);
 	
 	protected AudioPlayer _player = null;
 	private final JPanel panel_2 = new JPanel();
-	private final JLabel _lblVolume = new JLabel("100 %");
 	private final JPanel panel_3 = new JPanel();
 	private final JPanel panel_4 = new JPanel();
+	private final JLabel lblNewLabel = new JLabel("");
+	private final JLabel _lblVolume = new JLabel("0 %");
+	
 	
 
 	public AudioPlayerPanel(AudioPlayer player) {
@@ -77,15 +81,31 @@ public class AudioPlayerPanel extends JPanel implements ActionListener{
 		JPanel panel_1 = new JPanel();
 		add(panel_1);
 		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+		JButton back = new JButton("\u00AB");
+		back.setPreferredSize(new Dimension(50, 50));
+		back.setMaximumSize(new Dimension(50, 50));
+		back.setForeground(new Color(255, 140, 0));
+		back.setFont(new Font("SansSerif", Font.BOLD, 18));
+		back.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backButtonClicked();				
+			}
+		});
+		
+		panel_1.add(back);
+		_play.setFont(new Font("SansSerif", Font.BOLD, 18));
+		_play.setForeground(new Color(255, 140, 0));
 		
 		_play.setMaximumSize(new Dimension(50, 50));
 		_play.setPreferredSize(new Dimension(50, 50));
 		panel_1.add(_play);
 		if(_player.isPlaying()){
-			_play.setIcon(new ImageIcon(AudioPlayerPanel.class.getResource("/com/sun/webpane/sg/prism/resources/mediaPause.png")));
+			_play.setText("\u25AE\u25AE");
 		}
 		else{
-			_play.setIcon(new ImageIcon(AudioPlayerPanel.class.getResource("/com/sun/webpane/sg/prism/resources/mediaPlay.png")));
+			_play.setText("\u25B6");
 		}
 		_play.addActionListener(new ActionListener() {
 			
@@ -97,12 +117,12 @@ public class AudioPlayerPanel extends JPanel implements ActionListener{
 		
 		
 		
-		JButton skip = new JButton(">>");
+		JButton skip = new JButton("\u00BB");
 		skip.setMaximumSize(new Dimension(50, 50));
 		skip.setPreferredSize(new Dimension(50, 50));
 		panel_1.add(skip);
 		skip.setFont(new Font("SansSerif", Font.BOLD, 18));
-		skip.setForeground(Color.WHITE);
+		skip.setForeground(new Color(255, 140, 0));
 		skip.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -113,27 +133,33 @@ public class AudioPlayerPanel extends JPanel implements ActionListener{
 		
 		panel_1.add(panel_2);
 		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
+		panel_4.setMaximumSize(new Dimension(40, 32767));
 		panel_2.add(panel_4);
-		panel_4.setPreferredSize(new Dimension(10, 50));
-		panel_4.setMaximumSize(new Dimension(10, 32767));
-		panel_2.add(_volume);
-		_volume.setValue(100);
-		_volume.setMajorTickSpacing(10);
-		_lblVolume.setFont(new Font("SansSerif", Font.ITALIC, 12));
-		_lblVolume.setForeground(Color.DARK_GRAY);
+		panel_4.setPreferredSize(new Dimension(40, 50));
+		panel_4.setLayout(new BorderLayout(0, 0));
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		
-		panel_2.add(_lblVolume);
-		panel_3.setMaximumSize(new Dimension(10, 32767));
-		panel_3.setPreferredSize(new Dimension(10, 50));
+		panel_4.add(lblNewLabel);
+		panel_2.add(_volume);
+		_volume.setValue(_player.getVolume());
+		_volume.setMajorTickSpacing(10);
+		
+		panel_3.setMaximumSize(new Dimension(40, 32767));
+		panel_3.setPreferredSize(new Dimension(40, 50));
 		
 		panel_2.add(panel_3);
+		panel_3.setLayout(new BorderLayout(0, 0));
+		_lblVolume.setHorizontalAlignment(SwingConstants.CENTER);
+		_lblVolume.setForeground(Color.DARK_GRAY);
+		_lblVolume.setFont(new Font("SansSerif", Font.ITALIC, 12));
+		_lblVolume.setText(_volume.getValue() + " %");
+		
+		panel_3.add(_lblVolume);
 		_volume.addChangeListener(new ChangeListener() {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				volumeChanged();
-				_lblVolume.setText(_volume.getValue() + " %");
-				
 			}
 		});
 		
@@ -144,31 +170,51 @@ public class AudioPlayerPanel extends JPanel implements ActionListener{
 	protected void playButtonClicked(){
 		if(_player.isPlaying()){
 			_player.Pause();
-			_play.setIcon(new ImageIcon(AudioPlayerPanel.class.getResource("/com/sun/webpane/sg/prism/resources/mediaPlay.png")));
+			_play.setText("\u25B6");
 			
 		}
 		else{
 			_player.Play();
-			_play.setIcon(new ImageIcon(AudioPlayerPanel.class.getResource("/com/sun/webpane/sg/prism/resources/mediaPause.png")));
+			_play.setText("\u25AE\u25AE");
 		}
 	}
 	
 	protected void skipButtonClicked(){
 		_player.Next();
-		updateProgress();
+		update();
+	}
+	
+	protected void backButtonClicked(){
+		_player.Prev();
+		update();
 	}
 	
 	protected void volumeChanged(){
 		_player.setVolume(_volume.getValue());
+		_lblVolume.setText(_volume.getValue() + " %");
 	}
 	
-	protected void updateProgress(){
+	protected void update(){
 		_time.setText(secondsToTime(_player.getProgress()) + " von " + secondsToTime(_player.getDuration()));
 		_progress.setMaximum(_player.getDuration());
 		_progress.setValue(_player.getProgress());
+		_volume.setValue(_player.getVolume());
+		_lblVolume.setText(_volume.getValue() + " %");
+		
+		_player.getPlaylist().update();
+		
+		if(_player.isPlaying()){
+			_play.setText("\u25AE\u25AE");
+		}
+		else{
+			_play.setText("\u25B6");
+		}
 		try{
-			_title.setText(_player.getCurrentTitle().getName().replaceAll(".mp3", ""));
+			MPDSong song = _player.getCurrentTitle();
+			String filename = Paths.get(song.getFile()).getFileName().toString();
+			_title.setText(song.getArtist() + " - " + song.getTitle() + " (" + filename + ")");
 		}catch(Exception e){}
+		
 	}
 	
 	
@@ -183,7 +229,7 @@ public class AudioPlayerPanel extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		updateProgress();		
+		update();		
 	}
 	
 	

@@ -3,63 +3,69 @@
  */
 package bowa.audio;
 
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Iterator;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.bff.javampd.MPD;
+import org.bff.javampd.objects.MPDSong;
+
 /**
  * @author Phillip
  *
  */
 @SuppressWarnings("serial")
-public class MusicLibrary extends DefaultTreeModel implements FileVisitor<Path>{
+public class MusicLibrary extends DefaultTreeModel{
 
-	protected Path _rootPath = null;
+	protected MPD _mpd = null;
 
 	
-	public MusicLibrary(Path root) throws IOException {
-		super(new DefaultMutableTreeNode(root));
-		_rootPath = root;
-		
-		addToLib(_rootPath);	
+	public MusicLibrary(MPD mpd){
+		super(new DefaultMutableTreeNode("Music"));
+		_mpd = mpd;
+		update();
+			
 	}
 
-	
-	public void addToLib(Path dir) throws IOException{
-		Files.walkFileTree(dir, this);
-	}
-	
-
-	@Override
-	public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-			throws IOException {
 
 
+	public void update(){
+		try {
+			_mpd.getMPDAdmin().updateDatabase();
+		} catch (Exception e) {}
 		
-		if(attrs.isRegularFile()){
-			if(file.getFileName().toString().toLowerCase().endsWith("mp3")){
+		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)getRoot();
+		Iterator<Path> pathIter = null;
+		Path subPath = null;
+		MPDSong song = null;
 				
-				Path p = _rootPath.relativize(file);
+		try {
+			Iterator<MPDSong> list = _mpd.getMPDDatabase().listAllSongs().iterator();
+			
+			parent.removeAllChildren();
+			
+			while(list.hasNext()){
+				song = list.next();
+				pathIter = Paths.get(song.getFile()).iterator();
+				parent = (DefaultMutableTreeNode)getRoot();
 				
-				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) getRoot();
-				
-				Iterator<Path> iter = p.iterator();
-				while(iter.hasNext()){
-					parent = appendNode(parent, new DefaultMutableTreeNode(iter.next()));				
+				while(pathIter.hasNext()){
+					subPath = pathIter.next();
+					if(pathIter.hasNext()){
+						parent = appendNode(parent, new DefaultMutableTreeNode(subPath));
+					}else{
+						appendNode(parent, new DefaultMutableTreeNode(new SongContainer(song)));
+					}
 				}
 				
 			}
-		}
+			super.reload();
+		} catch (Exception e) {}
 		
-		return FileVisitResult.CONTINUE;
 	}
 
 	
@@ -78,25 +84,7 @@ public class MusicLibrary extends DefaultTreeModel implements FileVisitor<Path>{
 		parent.add(child);
 		return child;
 	}
-	
-	
-	@Override
-	public FileVisitResult postVisitDirectory(Path dir, IOException exc)
-			throws IOException {
-		return FileVisitResult.CONTINUE;
-	}
 
-	@Override
-	public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-			throws IOException {
-		return FileVisitResult.CONTINUE;
-	}
-	
-	@Override
-	public FileVisitResult visitFileFailed(Path file, IOException exc)
-			throws IOException {
-		return FileVisitResult.SKIP_SUBTREE;
-	}
 
 
 }

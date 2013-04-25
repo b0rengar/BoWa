@@ -7,7 +7,6 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTree;
 import javax.swing.border.EtchedBorder;
 
 import bowa.audio.AudioPlayer;

@@ -3,54 +3,102 @@
  */
 package bowa.audio;
 
-import java.io.File;
-import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-
-import javafx.animation.KeyValue;
+import java.util.List;
 
 import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import org.bff.javampd.MPD;
+import org.bff.javampd.exception.MPDConnectionException;
+import org.bff.javampd.exception.MPDPlayerException;
+import org.bff.javampd.exception.MPDPlaylistException;
+import org.bff.javampd.objects.MPDSong;
+
 /**
  * @author Phillip 
  *
  */
-public class Playlist implements ListModel<File>{
+public class Playlist implements ListModel<MPDSong>{
 	
 	protected ArrayList<ListDataListener> _listener = new ArrayList<ListDataListener>();
 	
-	protected ArrayList<File> _list = new ArrayList<File>();
 	
-	protected int _nextTitle = 0;
+	protected MPD _mpd = null;
 	
-	public void addTitle(File title){
-		_list.add(title);
-		notifyListeners(getSize()-1, getSize()-1);
+	protected List<MPDSong> _sList = null;
+
+
+	public Playlist(MPD mpd) {
+		_mpd = mpd;
+		update();
 	}
 	
-	public File getNextTitle(){
-		File f = null;
-		try{
-			f = _list.get(_nextTitle++);
+	public void update(){
+		try {
+			_sList = _mpd.getMPDPlaylist().getSongList();
+		} catch (MPDPlaylistException e) {
+			e.printStackTrace();
+		} catch (MPDConnectionException e) {
+			e.printStackTrace();
 		}
-		catch(Exception e){}
+		notifyListeners(0, _sList.size());
+	}
+	
+	public MPDSong getCurrentSong(){
+		try {
+			return _mpd.getMPDPlayer().getCurrentSong();
+		} catch (Exception e) {e.printStackTrace();}
 		
-		return f;
+		return null;
 	}
 	
-	public void removeTitle(int index){
-		_list.remove(index);
-		notifyListeners(0, getSize()-1);
+	public void setNext(MPDSong song){
+		try {
+			_mpd.getMPDPlayer().playId(song);
+			update();
+		} catch (MPDPlayerException e) {
+			e.printStackTrace();
+		} catch (MPDConnectionException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public void removeTitle(File title){
-		_list.remove(title);
-		notifyListeners(0, getSize()-1);
+	public void addTitle(MPDSong song){
+		try {
+			_mpd.getMPDPlaylist().addSong(song);
+			update();
+		} catch (MPDPlaylistException e) {
+			e.printStackTrace();
+		} catch (MPDConnectionException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void removeTitle(MPDSong song){
+		try {
+			_mpd.getMPDPlaylist().removeSong(song);
+			update();
+		} catch (MPDPlaylistException e) {
+			e.printStackTrace();
+		} catch (MPDConnectionException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void swapTitle(MPDSong song1, MPDSong song2){
+		try {
+			_mpd.getMPDPlaylist().swap(song1, song2);
+			update();
+		} catch (MPDPlaylistException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MPDConnectionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
@@ -77,13 +125,13 @@ public class Playlist implements ListModel<File>{
 
 	
 	@Override
-	public File getElementAt(int index) {
-		return _list.get(index);
+	public MPDSong getElementAt(int index) {
+		return _sList.get(index);
 	}
 
 	@Override
 	public int getSize() {
-		return _list.size();
+		return _sList.size();
 	}
 	
 }

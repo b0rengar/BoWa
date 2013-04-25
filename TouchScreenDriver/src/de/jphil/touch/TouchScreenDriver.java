@@ -59,15 +59,9 @@ public class TouchScreenDriver implements SerialListener{
 	
 	
 	private TouchScreenDriver(SerialReader reader){
-		try {
-			
+		try {			
 			_mouse = new Robot();
-			reader.addListener(this);
-			
-			
-			
-			
-		
+			reader.addListener(this);		
 		} catch (AWTException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -94,9 +88,8 @@ public class TouchScreenDriver implements SerialListener{
 			//System.out.println("Touch");
 			_buffer.delete(0, touch+ "Touch".length() + 1);
 			_touched = true;
-		}
-		
-		if (m.find()) {
+		} 
+		else if (m.find()) {
 			_buffer.delete(0, m.start()+ m.group().length() + 1);
 			//System.out.println("--> " + m.group());
 			
@@ -118,9 +111,7 @@ public class TouchScreenDriver implements SerialListener{
 				_touched = false;
 			}
 		}
-		
-		
-		if(end != -1){
+		else if(end != -1){
 			//System.out.println("End");
 			_buffer.delete(0, end + "End".length() + 1);
 			_mouse.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);

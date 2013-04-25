@@ -3,81 +3,125 @@
  */
 package bowa.audio;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import javafx.application.Application;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import org.bff.javampd.MPD;
+import org.bff.javampd.MPDPlayer;
+import org.bff.javampd.MPDPlayer.PlayerStatus;
+import org.bff.javampd.events.PlayerChangeEvent;
+import org.bff.javampd.events.PlayerChangeListener;
+import org.bff.javampd.exception.MPDConnectionException;
+import org.bff.javampd.exception.MPDPlayerException;
+import org.bff.javampd.objects.MPDSong;
 
 /**
  * @author Phillip
  *
  */
-public class AudioPlayer implements Runnable{
+public class AudioPlayer implements PlayerChangeListener{
+
+		
+	protected MPDPlayer _player = null;
 	
-	protected MediaPlayer _player = null;
+	protected MPD _mpd = null;
 	
-	protected Playlist _playlist = new Playlist();
+	protected Playlist _playlist = null;
+
 	
-	public AudioPlayer(){
-		new JFXPanel();
+	public AudioPlayer(MPD mpd){
+
+		try {
+			_mpd = mpd;
+			_player = _mpd.getMPDPlayer();
+			_player.addPlayerChangeListener(this);
+			_player.setRepeat(true);	
+			_playlist = new Playlist(_mpd);
+		} catch (MPDConnectionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MPDPlayerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public Playlist getPlaylist(){
 		return _playlist;
 	}
 	
-	
-	public void addFile(File file){
-		_playlist.addTitle(file);
+	public int getDuration(){
+		try {
+			return _player.getCurrentSong().getLength();
+		} catch (Exception e) {}
+		return 0;
 	}
-
+	
+	public int getProgress(){
+		try {
+			return (int)_player.getElapsedTime();
+		} catch (Exception e) {}
+		return 0;
+	}
+	
+	public int getVolume(){
+		try {
+			return _player.getVolume();
+		} catch (Exception e) {}
+		return 0;
+	}
+	
+	public void setVolume(int volume){
+		try {
+			_player.setVolume(volume);
+		} catch (Exception e){}
+	}
+	
+	public boolean isPlaying(){
+		try {
+			return (_player.getStatus() == PlayerStatus.STATUS_PLAYING);
+		} catch (Exception e){}
+		return false;
+	}
+	
+	public MPDSong getCurrentTitle(){
+		try {
+			return _player.getCurrentSong();
+		} catch (Exception e) {e.printStackTrace();}
+		
+		return null;
+	}
+	
 	
 	public void Play(){
-		if(_player == null){
-			Next();
-		}else{
+		try{
 			_player.play();
-		}
+		}catch(Exception e){e.printStackTrace();}
 		
 	}
 	
 	public void Pause(){
-		_player.pause();
+		try {
+			_player.pause();
+		} catch (Exception e){e.printStackTrace();}
 	}
 	
 	public void Next(){
-		if(_player != null){
-			_player.stop();
-		}
-		
-		File file = _playlist.getNextTitle();
-		
-		if(file != null){
-			try{
-				_player = new MediaPlayer(new Media("file:///"+file.getPath().replace('\\', '/').replaceAll(" ", "%20")));
-				_player.setOnEndOfMedia(this);
-				_player.play();
-			}
-			catch(Exception e){
-				e.printStackTrace();
-			}
-		}
+		try {
+			_player.playNext();
+		} catch (Exception e) {e.printStackTrace();}
 	}
-	
-	
-	
-	
+
+	public void Prev(){
+		try {
+			_player.playPrev();
+		} catch (Exception e) {e.printStackTrace();}
+		
+	}
 	
 
 	@Override
-	public void run() {
-		Next();		
+	public void playerChanged(PlayerChangeEvent event) {
+		_playlist.update();
+		
 	}
 
 }
