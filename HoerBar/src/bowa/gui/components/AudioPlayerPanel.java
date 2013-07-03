@@ -82,8 +82,9 @@ public class AudioPlayerPanel extends JPanel implements ActionListener{
 		add(panel_1);
 		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
 		JButton back = new JButton("\u00AB");
-		back.setPreferredSize(new Dimension(50, 50));
-		back.setMaximumSize(new Dimension(50, 50));
+		back.setMinimumSize(new Dimension(75, 75));
+		back.setPreferredSize(new Dimension(75, 75));
+		back.setMaximumSize(new Dimension(75, 75));
 		back.setForeground(new Color(255, 140, 0));
 		back.setFont(new Font("SansSerif", Font.BOLD, 18));
 		back.addActionListener(new ActionListener() {
@@ -95,11 +96,12 @@ public class AudioPlayerPanel extends JPanel implements ActionListener{
 		});
 		
 		panel_1.add(back);
+		_play.setMinimumSize(new Dimension(75, 75));
 		_play.setFont(new Font("SansSerif", Font.BOLD, 18));
 		_play.setForeground(new Color(255, 140, 0));
 		
-		_play.setMaximumSize(new Dimension(50, 50));
-		_play.setPreferredSize(new Dimension(50, 50));
+		_play.setMaximumSize(new Dimension(75, 75));
+		_play.setPreferredSize(new Dimension(75, 75));
 		panel_1.add(_play);
 		if(_player.isPlaying()){
 			_play.setText("\u25AE\u25AE");
@@ -118,8 +120,9 @@ public class AudioPlayerPanel extends JPanel implements ActionListener{
 		
 		
 		JButton skip = new JButton("\u00BB");
-		skip.setMaximumSize(new Dimension(50, 50));
-		skip.setPreferredSize(new Dimension(50, 50));
+		skip.setMinimumSize(new Dimension(75, 75));
+		skip.setMaximumSize(new Dimension(75, 75));
+		skip.setPreferredSize(new Dimension(75, 75));
 		panel_1.add(skip);
 		skip.setFont(new Font("SansSerif", Font.BOLD, 18));
 		skip.setForeground(new Color(255, 140, 0));

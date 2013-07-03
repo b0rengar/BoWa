@@ -21,6 +21,7 @@ import javax.swing.JSeparator;
 import org.bff.javampd.objects.MPDSong;
 
 import bowa.audio.AudioPlayer;
+import javax.swing.ScrollPaneConstants;
 
 /**
  * @author Phillip
@@ -52,6 +53,8 @@ public class PlaylistPanel extends JPanel {
 		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.Y_AXIS));
 		
 		JButton btnUp = new JButton("\u2191");
+		btnUp.setMinimumSize(new Dimension(75, 75));
+		btnUp.setMaximumSize(new Dimension(75, 75));
 		btnUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				upButtonClicked();
@@ -59,43 +62,45 @@ public class PlaylistPanel extends JPanel {
 		});
 		
 		JButton button_1 = new JButton("\u25B6");
+		button_1.setMinimumSize(new Dimension(75, 75));
 		panel_2.add(button_1);
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				playButtonClicked();
 			}
 		});
-		button_1.setPreferredSize(new Dimension(50, 50));
-		button_1.setMaximumSize(new Dimension(50, 50));
+		button_1.setPreferredSize(new Dimension(75, 75));
+		button_1.setMaximumSize(new Dimension(75, 75));
 		button_1.setForeground(new Color(255, 140, 0));
 		button_1.setFont(new Font("SansSerif", Font.BOLD, 18));
 		btnUp.setAlignmentY(Component.TOP_ALIGNMENT);
 		panel_2.add(btnUp);
-		btnUp.setPreferredSize(new Dimension(50, 50));
-		btnUp.setMaximumSize(new Dimension(50, 50));
+		btnUp.setPreferredSize(new Dimension(75, 75));
 		btnUp.setForeground(new Color(255, 140, 0));
 		btnUp.setFont(new Font("SansSerif", Font.BOLD, 18));
 		
 		JButton btnDown = new JButton("\u2193");
+		btnDown.setMinimumSize(new Dimension(75, 75));
 		btnDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				downButtonClicked();
 			}
 		});
-		btnDown.setPreferredSize(new Dimension(50, 50));
-		btnDown.setMaximumSize(new Dimension(50, 50));
+		btnDown.setPreferredSize(new Dimension(75, 75));
+		btnDown.setMaximumSize(new Dimension(75, 75));
 		btnDown.setForeground(new Color(255, 140, 0));
 		btnDown.setFont(new Font("SansSerif", Font.BOLD, 18));
 		panel_2.add(btnDown);
 		
 		JButton btnX = new JButton("X");
+		btnX.setMinimumSize(new Dimension(75, 75));
 		btnX.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				removeButtonClicked();
 			}
 		});
-		btnX.setPreferredSize(new Dimension(50, 50));
-		btnX.setMaximumSize(new Dimension(50, 50));
+		btnX.setPreferredSize(new Dimension(75, 75));
+		btnX.setMaximumSize(new Dimension(75, 75));
 		btnX.setForeground(new Color(255, 0, 0));
 		btnX.setFont(new Font("SansSerif", Font.BOLD, 18));
 		panel_2.add(btnX);
@@ -107,14 +112,15 @@ public class PlaylistPanel extends JPanel {
 		panel_2.add(panel_3);
 		
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		panel_1.add(scrollPane);
+		scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(50, 0));
 		
 		_list = new JList<MPDSong>(_player.getPlaylist());
 		_list.setCellRenderer(new PlaylistCellRenderer());
 		scrollPane.setViewportView(_list);
 	}
-	
-	
+		
 	protected void upButtonClicked(){
 		if(_list.getSelectedIndex() < 1) return;
 		_player.getPlaylist().swapTitle(_list.getSelectedValue(), _player.getPlaylist().getElementAt(_list.getSelectedIndex()-1));

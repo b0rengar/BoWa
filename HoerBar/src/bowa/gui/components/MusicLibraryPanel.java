@@ -20,6 +20,7 @@ import javax.swing.tree.TreePath;
 import bowa.audio.AudioPlayer;
 import bowa.audio.MusicLibrary;
 import bowa.audio.SongContainer;
+import javax.swing.ScrollPaneConstants;
 
 /**
  * @author Phillip
@@ -41,12 +42,6 @@ public class MusicLibraryPanel extends JPanel{
 		_player = player;
 		_lib = lib;
 		
-		JScrollPane scrollPane = new JScrollPane();
-		add(scrollPane);
-		
-		_tree = new JTree(lib);
-		scrollPane.setViewportView(_tree);
-		
 		JPanel panel = new JPanel();
 		panel.setMaximumSize(new Dimension(50, 32767));
 		add(panel);
@@ -55,8 +50,9 @@ public class MusicLibraryPanel extends JPanel{
 		
 		
 		JButton btnUpdateLibrary = new JButton("\u21BA");
-		btnUpdateLibrary.setPreferredSize(new Dimension(50, 50));
-		btnUpdateLibrary.setMaximumSize(new Dimension(50, 50));
+		btnUpdateLibrary.setMinimumSize(new Dimension(75, 75));
+		btnUpdateLibrary.setPreferredSize(new Dimension(75, 75));
+		btnUpdateLibrary.setMaximumSize(new Dimension(75, 75));
 		btnUpdateLibrary.setForeground(new Color(255, 140, 0));
 		btnUpdateLibrary.setFont(new Font("SansSerif", Font.BOLD, 17));
 		btnUpdateLibrary.addActionListener(new ActionListener() {
@@ -67,26 +63,13 @@ public class MusicLibraryPanel extends JPanel{
 		});
 		panel.add(btnUpdateLibrary);
 		
-		JButton btnAddToLibrary = new JButton("+");
-		btnAddToLibrary.setPreferredSize(new Dimension(50, 50));
-		btnAddToLibrary.setMaximumSize(new Dimension(50, 50));
-		btnAddToLibrary.setForeground(new Color(255, 140, 0));
-		btnAddToLibrary.setFont(new Font("SansSerif", Font.PLAIN, 30));
-		btnAddToLibrary.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		panel.add(btnAddToLibrary);
 		
-		
-		JButton btnAddToPlaylist = new JButton("\u2192");
-		btnAddToPlaylist.setMaximumSize(new Dimension(50, 50));
-		btnAddToPlaylist.setPreferredSize(new Dimension(50, 50));
+		JButton btnAddToPlaylist = new JButton("+");
+		btnAddToPlaylist.setMinimumSize(new Dimension(75, 75));
+		btnAddToPlaylist.setMaximumSize(new Dimension(75, 75));
+		btnAddToPlaylist.setPreferredSize(new Dimension(75, 75));
 		btnAddToPlaylist.setForeground(new Color(255, 140, 0));
-		btnAddToPlaylist.setFont(new Font("SansSerif", Font.BOLD, 18));
+		btnAddToPlaylist.setFont(new Font("SansSerif", Font.PLAIN, 30));
 		btnAddToPlaylist.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -94,6 +77,15 @@ public class MusicLibraryPanel extends JPanel{
 			}
 		});
 		panel.add(btnAddToPlaylist);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		add(scrollPane);
+		scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(50, 0));
+		
+		_tree = new JTree(lib);
+		scrollPane.setViewportView(_tree);
+		_tree.setCellRenderer(new LibraryCellRenderer());
 	}
 
 	public void buttonAddToPlaylistClicked() {

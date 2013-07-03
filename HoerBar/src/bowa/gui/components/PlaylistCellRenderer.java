@@ -5,6 +5,7 @@ package bowa.gui.components;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.nio.file.Paths;
 
 import javax.swing.DefaultListCellRenderer;
@@ -42,7 +43,7 @@ public class PlaylistCellRenderer extends DefaultListCellRenderer {
 		String pos = ((song.getPosition()+1) <10?"  ":((song.getPosition()+1) <10?" ":"")) + (song.getPosition()+1) + ".";
 		
 		this.setText(pos + " [" + secondsToTime(song.getLength()) + "] " + song.getArtist() + " - " + song.getTitle() + " (" + filename + ")");
-		
+		this.setFont(new Font("SansSerif", Font.BOLD, 20));
 		return this;
 	}
 	

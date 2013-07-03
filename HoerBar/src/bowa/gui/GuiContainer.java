@@ -15,13 +15,15 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
 import org.bff.javampd.MPD;
 
 import bowa.audio.AudioPlayer;
 import bowa.audio.MusicLibrary;
-import bowa.gui.tabs.AudioTab;
+import bowa.gui.components.MusicLibraryPanel;
+import bowa.gui.tabs.PlayerTab;
 
 /**
  * @author Phillip
@@ -39,6 +41,7 @@ public class GuiContainer extends JFrame {
 	
 	
 	public GuiContainer(MPD mpd) {
+		setTitle("Sound PI");
 		setAlwaysOnTop(true);
 		setUndecorated(true);
 		_this = this;
@@ -53,35 +56,36 @@ public class GuiContainer extends JFrame {
 		_player = new AudioPlayer(mpd);
 
 		
-		AudioTab audioTab = new AudioTab(_player, _lib );
-		getContentPane().add(audioTab, BorderLayout.CENTER);
+		JTabbedPane tabs = new JTabbedPane();
+		getContentPane().add(tabs, BorderLayout.CENTER);
+		tabs.addTab("<html><body><font size=25 color=#ff8c00>Player</font></body></html>", new PlayerTab(_player, _lib));
+		tabs.addTab("<html><body><font size=25 color=#ff8c00>Bibliothek</font></body></html>", new MusicLibraryPanel(_lib, _player));
 
 		
 		JPanel panel = new JPanel();
-		panel.setBackground(Color.WHITE);
 		getContentPane().add(panel, BorderLayout.NORTH);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		
 		JPanel panel_1 = new JPanel();
-		panel_1.setBackground(Color.WHITE);
 		panel.add(panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
-		JLabel lblHoerbar = new JLabel("HoerBAR");
+		JLabel lblHoerbar = new JLabel("Sound PI");
 		lblHoerbar.setHorizontalAlignment(SwingConstants.CENTER);
-		lblHoerbar.setForeground(Color.ORANGE);
+		lblHoerbar.setForeground(new Color(255, 20, 147));
 		lblHoerbar.setFont(new Font("SansSerif", Font.BOLD, 45));
 		panel_1.add(lblHoerbar);
 		
 		
 		JButton btnA = new JButton("L");
-		btnA.setPreferredSize(new Dimension(50, 50));
-		btnA.setMaximumSize(new Dimension(50, 50));
+		btnA.setPreferredSize(new Dimension(75, 75));
+		btnA.setMaximumSize(new Dimension(75, 75));
 		btnA.setForeground(new Color(0, 0, 0));
 		btnA.setFont(new Font("SansSerif", Font.BOLD, 20));
 		panel.add(btnA);
 		
 		JButton btnExit = new JButton("X");
+		btnExit.setMaximumSize(new Dimension(75, 75));
 		btnExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				closeButtonClicked();
@@ -89,8 +93,7 @@ public class GuiContainer extends JFrame {
 		});
 		btnExit.setForeground(Color.RED);
 		btnExit.setFont(new Font("SansSerif", Font.BOLD, 20));
-		btnExit.setMaximumSize(new Dimension(50, 50));
-		btnExit.setPreferredSize(new Dimension(50, 50));
+		btnExit.setPreferredSize(new Dimension(75, 75));
 		panel.add(btnExit);
 	
 	}
