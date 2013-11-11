@@ -19,6 +19,7 @@ import bowa.gui.GuiContainer;
 public class HoerBar {
 
 	/**
+	 * main-methode
 	 * @param args
 	 */
 	public static void main(String[] args) {
